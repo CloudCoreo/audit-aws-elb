@@ -31,6 +31,9 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   operators ["=~"]
   raise_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
+  meta_viz_query "visualization query"
+  meta_rule_query "rule query"
+  meta_rule_node_triggers ["type1", "type2"]
 end
 
 coreo_aws_rule "elb-old-ssl-policy" do
