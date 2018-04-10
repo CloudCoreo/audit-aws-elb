@@ -32,7 +32,7 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   raise_when [//]
   id_map "object.load_balancer_descriptions.load_balancer_name"
   meta_viz_query "visualization query"
-  meta_rule_query "{ objects(func: has(vpc)) @filter(has(vpc_instance) AND (%<vpc_filter>s)) @cascade {\nobjectName\nvpc_instance @filter(has(instance_subnet) AND (%<instance_filter>s)) {\nobjectName\ninstance_subnet @filter(has(subnet) AND (%<subnet_filter>s)) {\nexpand(_all_)}}}}"
+  meta_rule_query "{ objects(func: has(vpc)) @filter(%<vpc_filter>s) @cascade { \nobjectName \nrelates_to @filter(%<instance_filter>s) { \nobjectName \nrelates_to @filter(%<subnet_filter>s) { \nexpand(_all_) \n} \n} \n} \n}"
   meta_rule_node_triggers ['vpc', 'instance', 'subnet']
 end
 
