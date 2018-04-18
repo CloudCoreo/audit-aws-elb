@@ -33,7 +33,11 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   id_map "object.load_balancer_descriptions.load_balancer_name"
   meta_viz_query "visualization query"
   meta_rule_query "{ objects(func: has(vpc)) @filter(%<vpc_filter>s) @cascade { \nobjectName \nrelates_to @filter(%<instance_filter>s) { \nobjectName \nrelates_to @filter(%<subnet_filter>s) { \nexpand(_all_) \n} \n} \n} \n}"
-  meta_rule_node_triggers ['vpc', 'instance', 'subnet']
+  meta_rule_node_triggers({
+    'vpc' => [],
+    'instance' => ['instance_type', 'hypervisor'],
+    'subnet' => ['objectId', 'objectName']
+  })
 end
 
 coreo_aws_rule "elb-old-ssl-policy" do
