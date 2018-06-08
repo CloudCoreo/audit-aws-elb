@@ -45,10 +45,10 @@ coreo_aws_rule "elb-old-ssl-policy" do
   meta_nist_171_id "3.5.4"
   id_map "modifiers.load_balancer_name"
   objectives     ["load_balancers", "load_balancer_descriptions" ]
-  audit_objects  ["", "object.load_balancer_descriptions[0].listener_descriptions[0].listener"]
+  audit_objects  ["", "object.load_balancer_descriptions"]
   call_modifiers [{}, {:load_balancer_name => "load_balancer_descriptions.load_balancer_name"}]
-  formulas       ["", "protocol"]
-  operators      ["", "=="]
+  formulas       ["", "jmespath.[].listener_descriptions[].listener.protocol"]
+  operators      ["", "=~"]
   raise_when     ["", "HTTP"]
   id_map "modifiers.load_balancer_name"
 end
