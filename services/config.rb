@@ -46,7 +46,7 @@ coreo_aws_rule "elb-old-ssl-policy" do
   id_map "modifiers.load_balancer_name"
   objectives     ["load_balancers", "load_balancer_descriptions" ]
   audit_objects  ["", "object.load_balancer_descriptions"]
-  call_modifiers [{}, {:load_balancer_name => "load_balancer_descriptions.load_balancer_name"}]
+  call_modifiers [{}, {:load_balancer_name => "load_balancer_descriptions.load_balancer_names"}]
   formulas       ["", "jmespath.[].listener_descriptions[].listener.protocol"]
   operators      ["", "=~"]
   raise_when     ["", "HTTP"]
