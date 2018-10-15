@@ -51,6 +51,28 @@ coreo_aws_rule "elb-old-ssl-policy" do
   operators      ["", "=~"]
   raise_when     ["", /ELBSecurityPolicy-(?!2016-08)/]
   id_map "modifiers.load_balancer_name"
+  meta_rule_query <<~QUERY
+  {
+    lb as var(func: <%= filter['load_balancer'] %>) { }
+    pd as var(func: <%= filter['policy_description'] %>) @cascade {
+      date as policy_date
+    }
+    query(func: uid(lb)) @cascade {
+      <%= default_predicates %>
+      availability_zones
+      relates_to @filter(uid(pd) AND lt(val(date), "2016-08-01T00:00:00Z")) {
+        <%= default_predicates %>
+        policy_name
+        policy_description_id
+        policy_date
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers({
+                              'load_balancer' => [],
+                              'policy_description' => ['policy_date']
+                          })
 end
 
 coreo_aws_rule "elb-current-ssl-policy" do
