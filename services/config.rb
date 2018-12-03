@@ -51,6 +51,11 @@ coreo_aws_rule "elb-old-ssl-policy" do
   operators      ["", "=~"]
   raise_when     ["", /ELBSecurityPolicy-(?!2016-08)/]
   id_map "modifiers.load_balancer_name"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.5.4" }
+    ]
+  )
   meta_rule_query <<~QUERY
   {
     lb as var(func: <%= filter['load_balancer'] %>) { }
