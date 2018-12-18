@@ -21,7 +21,7 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   service :ElasticLoadBalancing
   include_violations_in_count false
   link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
-  display_name "CloudCoreo Use Only"
+  display_name "SecureState Use Only"
   description "This is an internally defined alert."
   category "Internal"
   suggested_action "Ignore"
