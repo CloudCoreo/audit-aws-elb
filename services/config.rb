@@ -2,7 +2,7 @@
 coreo_aws_rule "elb-inventory" do
   action :define
   service :ElasticLoadBalancing
-  link "http://kb.cloudcoreo.com/mydoc_all-inventory.html"
+  link "https://kb.securestate.vmware.com/aws-all-inventory.html"
   include_violations_in_count false
   display_name "ELB Object Inventory"
   description "This rule performs an inventory on all Classic ELB's in the target AWS account."
@@ -20,7 +20,7 @@ coreo_aws_rule "elb-load-balancers-active-security-groups-list" do
   action :define
   service :ElasticLoadBalancing
   include_violations_in_count false
-  link "http://kb.cloudcoreo.com/mydoc_unused-alert-definition.html"
+  link "https://kb.securestate.vmware.com/aws-unused-alert-definition.html"
   display_name "CloudCoreo Use Only"
   description "This is an internally defined alert."
   category "Internal"
@@ -36,7 +36,7 @@ end
 coreo_aws_rule "elb-old-ssl-policy" do
   action :define
   service :ElasticLoadBalancing
-  link "http://kb.cloudcoreo.com/mydoc_elb-old-ssl-policy.html"
+  link "https://kb.securestate.vmware.com/aws-elb-old-ssl-policy.html"
   display_name "ELB is using old SSL policy"
   description "Elastic Load Balancing (ELB) SSL policy is not the latest Amazon predefined SSL policy or is a custom ELB SSL policy."
   category "Security"
@@ -51,12 +51,39 @@ coreo_aws_rule "elb-old-ssl-policy" do
   operators      ["", "=~"]
   raise_when     ["", /ELBSecurityPolicy-(?!2016-08)/]
   id_map "modifiers.load_balancer_name"
+  meta_compliance (
+    [
+      { "name" => "nist-sp800-171", "version" => "r1", "requirement" => "3.5.4" }
+    ]
+  )
+  meta_rule_query <<~QUERY
+  {
+    lb as var(func: <%= filter['load_balancer'] %>) { }
+    pd as var(func: <%= filter['policy_description'] %>) @cascade {
+      date as policy_date
+    }
+    query(func: uid(lb)) @cascade {
+      <%= default_predicates %>
+      availability_zones
+      relates_to @filter(uid(pd) AND lt(val(date), "2016-08-01T00:00:00Z")) {
+        <%= default_predicates %>
+        policy_name
+        policy_description_id
+        policy_date
+      }
+    }
+  }
+  QUERY
+  meta_rule_node_triggers({
+                              'load_balancer' => [],
+                              'policy_description' => ['policy_date']
+                          })
 end
 
 coreo_aws_rule "elb-current-ssl-policy" do
   action :define
   service :ElasticLoadBalancing
-  link "http://kb.cloudcoreo.com/mydoc_elb-current-ssl-policy.html"
+  link "https://kb.securestate.vmware.com/aws-elb-current-ssl-policy.html"
   include_violations_in_count false
   display_name "ELB is using current SSL policy"
   description "Elastic Load Balancing (ELB) SSL policy is the latest Amazon predefined SSL policy"
